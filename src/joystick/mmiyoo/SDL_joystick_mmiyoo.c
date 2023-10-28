@@ -156,6 +156,11 @@ static const char* MMIYOO_JoystickGetDeviceName(int device_index)
     return "MMiyoo Joystick";
 }
 
+static const char *MMIYOO_JoystickGetDevicePath(int index)
+{
+    return NULL;
+}
+
 static int MMIYOO_JoystickGetDevicePlayerIndex(int device_index)
 {
     return -1;
@@ -264,6 +269,7 @@ SDL_JoystickDriver SDL_MMIYOO_JoystickDriver = {
     MMIYOO_JoystickGetCount,
     MMIYOO_JoystickDetect,
     MMIYOO_JoystickGetDeviceName,
+    MMIYOO_JoystickGetDevicePath,
     MMIYOO_JoystickGetDevicePlayerIndex,
     MMIYOO_JoystickSetDevicePlayerIndex,
     MMIYOO_JoystickGetDeviceGUID,

@@ -64,7 +64,7 @@ static void MMIYOO_CloseDevice(_THIS)
 #endif
 }
 
-static int MMIYOO_OpenDevice(_THIS, void *handle, const char *devname, int iscapture)
+static int MMIYOO_OpenDevice(_THIS, const char *devname)
 {
 #if defined(MMIYOO)
     MI_S32 miret = 0;
@@ -148,14 +148,14 @@ static Uint8 *MMIYOO_GetDeviceBuf(_THIS)
     return (this->hidden->mixbuf);
 }
 
-static int MMIYOO_Init(SDL_AudioDriverImpl *impl)
+static SDL_bool MMIYOO_Init(SDL_AudioDriverImpl *impl)
 {
     impl->OpenDevice = MMIYOO_OpenDevice;
     impl->PlayDevice = MMIYOO_PlayDevice;
     impl->GetDeviceBuf = MMIYOO_GetDeviceBuf;
     impl->CloseDevice = MMIYOO_CloseDevice;
     impl->OnlyHasDefaultOutputDevice = 1;
-    return 1;
+    return SDL_TRUE;
 }
 
 AudioBootStrap MMIYOOAUDIO_bootstrap = {"MMIYOO", "MMIYOO AUDIO DRIVER", MMIYOO_Init, 0};

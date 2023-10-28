@@ -225,7 +225,8 @@ static int MMIYOO_QueueCopy(SDL_Renderer *renderer, SDL_RenderCommand *cmd, SDL_
 }
 
 static int MMIYOO_QueueCopyEx(SDL_Renderer *renderer, SDL_RenderCommand *cmd, SDL_Texture *texture,
-    const SDL_Rect *srcrect, const SDL_FRect *dstrect, const double angle, const SDL_FPoint *center, const SDL_RendererFlip flip)
+                              const SDL_Rect *srcrect, const SDL_FRect *dstrect,
+                              const double angle, const SDL_FPoint *center, const SDL_RendererFlip flip, float scale_x, float scale_y)
 {
     return 0;
 }
@@ -240,9 +241,10 @@ static int MMIYOO_RenderReadPixels(SDL_Renderer *renderer, const SDL_Rect *rect,
     return SDL_Unsupported();
 }
 
-static void MMIYOO_RenderPresent(SDL_Renderer *renderer)
+static int MMIYOO_RenderPresent(SDL_Renderer *renderer)
 {
     GFX_Flip();
+    return 0;
 }
 
 static void MMIYOO_DestroyTexture(SDL_Renderer *renderer, SDL_Texture *texture)

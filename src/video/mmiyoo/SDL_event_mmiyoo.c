@@ -22,6 +22,7 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 #include "../../SDL_internal.h"
+#include "SDL_event_mmiyoo.h"
 
 #if SDL_VIDEO_DRIVER_MMIYOO
 

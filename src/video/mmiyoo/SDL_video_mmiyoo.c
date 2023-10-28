@@ -186,7 +186,7 @@ int MMIYOO_CreateWindowFrom(_THIS, SDL_Window *window, const void *data)
     return SDL_Unsupported();
 }
 
-static SDL_VideoDevice *MMIYOO_CreateDevice(int devindex)
+static SDL_VideoDevice *MMIYOO_CreateDevice(void)
 {
     SDL_VideoDevice *device=NULL;
     SDL_GLDriverData *gldata=NULL;

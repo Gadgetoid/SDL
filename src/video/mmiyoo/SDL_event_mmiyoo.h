@@ -25,6 +25,7 @@
 #define __SDL_EVENT_MMIYOO_H__
 
 #include "../../SDL_internal.h"
+#include "../SDL_sysvideo.h"
 
 #include "../../events/SDL_events_c.h"
 
