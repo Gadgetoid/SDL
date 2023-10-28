@@ -29,7 +29,6 @@ export HOST=arm-linux
     --disable-video-opengl \
     --disable-video-opengles \
     --disable-video-opengles2 \
-    --disable-oss \
     --disable-dummyaudio \
     --disable-video-dummy \
     --host=${HOST} \
