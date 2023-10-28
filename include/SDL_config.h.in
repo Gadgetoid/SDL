@@ -494,4 +494,9 @@
 /* Libdecor get min/max content size functions */
 #undef SDL_HAVE_LIBDECOR_GET_MIN_MAX
 
+#undef SDL_VIDEO_DRIVER_MMIYOO
+#undef SDL_VIDEO_RENDER_MMIYOO
+#undef SDL_AUDIO_DRIVER_MMIYOO
+#undef SDL_JOYSTICK_MMIYOO
+
 #endif /* SDL_config_h_ */

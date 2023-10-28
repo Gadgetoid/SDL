@@ -102,6 +102,9 @@ static SDL_JoystickDriver *SDL_joystick_drivers[] = {
 #ifdef SDL_JOYSTICK_VITA
     &SDL_VITA_JoystickDriver,
 #endif
+#if defined(SDL_JOYSTICK_MMIYOO)
+    &SDL_MMIYOO_JoystickDriver,
+#endif
 #ifdef SDL_JOYSTICK_N3DS
     &SDL_N3DS_JoystickDriver
 #endif

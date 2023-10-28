@@ -2486,6 +2486,33 @@ CheckQNXAudio()
     fi
 }
 
+CheckMMiyooVideo()
+{
+    if test x$enable_video = xyes; then
+        AC_DEFINE(SDL_VIDEO_DRIVER_MMIYOO, 1, [ ])
+        AC_DEFINE(SDL_VIDEO_RENDER_MMIYOO, 1, [ ])
+        SOURCES="$SOURCES $srcdir/src/video/mmiyoo/*.c"
+        have_video=yes
+        EXTRA_CFLAGS="$EXTRA_CFLAGS -fPIC -mcpu=cortex-a7 -mfpu=neon-vfpv4 -O3 -I/opt/mmiyoo/arm-buildroot-linux-gnueabihf/sysroot/usr/include/SDL2"
+        EXTRA_LDFLAGS="$EXTRA_LDFLAGS -L. -lEGL -lGLESv2 -lrt -lSDL2_image -lSDL2_ttf -ljson-c"
+        SUMMARY_video="${SUMMARY_video} mmiyoo"
+    fi
+}
+
+CheckMMiyooAudio()
+{
+    if test x$enable_audio = xyes; then
+        AC_DEFINE(SDL_AUDIO_DRIVER_MMIYOO, 1, [ ])
+        SOURCES="$SOURCES $srcdir/src/audio/mmiyoo/*.c"
+        have_audio=yes
+        if test x$HOST = xarm-linux; then
+            EXTRA_CFLAGS="$EXTRA_CFLAGS -DMMIYOO -mcpu=cortex-a7 -mfpu=neon-vfpv4 -O3"
+            EXTRA_LDFLAGS="$EXTRA_LDFLAGS -Lmmiyoo/libs -lmi_ao -lshmvar -lmi_common -lmi_sys -lmi_gfx"
+        fi
+        SUMMARY_audio="${SUMMARY_audio} mmiyoo"
+    fi
+}
+
 dnl Check to see if OpenGL support is desired
 AC_ARG_ENABLE(video-opengl,
 [AS_HELP_STRING([--enable-video-opengl], [include OpenGL support [default=yes]])],
@@ -3792,6 +3819,13 @@ case "$host" in
                 CheckQNXVideo
                 ;;
         esac
+
+        case "$MOD" in
+            *mmiyoo*)           ARCH=mmiyoo
+                CheckMMiyooVideo
+                ;;
+        esac
+
         CheckVisibilityHidden
         CheckWerror
         CheckDeclarationAfterStatement
@@ -3901,6 +3935,9 @@ case "$host" in
             nto)
                 CheckQNXAudio
             ;;
+            mmiyoo)
+                CheckMMiyooAudio
+            ;;
           esac
         fi
         # Set up files for the joystick library
@@ -3926,6 +3963,11 @@ case "$host" in
                 AC_DEFINE(SDL_JOYSTICK_ANDROID, 1, [ ])
                 SOURCES="$SOURCES $srcdir/src/joystick/android/*.c"
                 SOURCES="$SOURCES $srcdir/src/joystick/steam/*.c"
+                have_joystick=yes
+            ;;
+            mmiyoo)
+                AC_DEFINE(SDL_JOYSTICK_MMIYOO, 1, [ ])
+                SOURCES="$SOURCES $srcdir/src/joystick/mmiyoo/*.c"
                 have_joystick=yes
             ;;
           esac
