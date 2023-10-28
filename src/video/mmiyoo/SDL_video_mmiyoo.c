@@ -36,14 +36,12 @@
 #include <sys/ioctl.h>
 #include <sys/time.h>
 #include <time.h>
-#include <json-c/json.h>
 
 #include "../../events/SDL_events_c.h"
 #include "../SDL_sysvideo.h"
 #include "../SDL_sysvideo.h"
 #include "../SDL_pixels_c.h"
 
-#include "SDL_image.h"
 #include "SDL_version.h"
 #include "SDL_syswm.h"
 #include "SDL_loadso.h"
@@ -58,7 +56,6 @@
 #include "hex_pen.h"
 
 MMIYOO_VideoInfo MMiyooVideoInfo={0};
-extern MMIYOO_EventInfo MMiyooEventInfo;
 
 static GFX gfx = {0};
 static int MMIYOO_VideoInit(_THIS);

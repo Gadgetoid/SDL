@@ -55,8 +55,6 @@ struct _NDS_TEXTURE {
     SDL_Texture *texture;
 };
 
-extern MMIYOO_EventInfo MMiyooEventInfo;
-
 static struct _NDS_TEXTURE ntex[MAX_TEXTURE] = {0};
 
 static int update_texture(void *chk, void *new, const void *pixels, int pitch)
