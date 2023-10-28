@@ -992,6 +992,9 @@ static const char *s_ControllerMappings[] = {
 #if SDL_JOYSTICK_N3DS
     "000000004e696e74656e646f20334400,Nintendo 3DS,crc:3210,a:b0,b:b1,back:b2,dpdown:b7,dpleft:b5,dpright:b4,dpup:b6,leftshoulder:b9,lefttrigger:b14,leftx:a0,lefty:a1,rightshoulder:b8,righttrigger:b15,rightx:a2,righty:a3,start:b3,x:b10,y:b11,",
 #endif
+#if SDL_JOYSTICK_MMIYOO
+    "4d4d69796f6f204a6f79737469636b00,MMiyoo Joystick,dpup:b0,dpdown:b1,dpleft:b2,dpright:b3,a:b4,b:b5,x:b6,y:b7,leftshoulder:b8,lefttrigger:b9,rightshoulder:b10,righttrigger:b11,back:b12,start:b13,guide:b14,",
+#endif
     "hidapi,*,a:b0,b:b1,back:b4,dpdown:b12,dpleft:b13,dpright:b14,dpup:b11,guide:b5,leftshoulder:b9,leftstick:b7,lefttrigger:a4,leftx:a0,lefty:a1,rightshoulder:b10,rightstick:b8,righttrigger:a5,rightx:a2,righty:a3,start:b6,x:b2,y:b3,",
     NULL
 };

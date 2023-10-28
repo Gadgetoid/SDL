@@ -30,8 +30,115 @@
 #include "../SDL_sysjoystick.h"
 #include "../SDL_joystick_c.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <linux/input.h>
+
+#include "SDL_events.h"
+#include "SDL_error.h"
+#include "SDL_mutex.h"
+#include "SDL_timer.h"
+#include "../../thread/SDL_systhread.h"
+
+#define MYKEY_UP            0
+#define MYKEY_DOWN          1
+#define MYKEY_LEFT          2
+#define MYKEY_RIGHT         3
+#define MYKEY_A             4
+#define MYKEY_B             5
+#define MYKEY_X             6
+#define MYKEY_Y             7
+#define MYKEY_L1            8
+#define MYKEY_R1            9
+#define MYKEY_L2            10
+#define MYKEY_R2            11
+#define MYKEY_SELECT        12
+#define MYKEY_START         13
+#define MYKEY_MENU          14
+#define MYKEY_QSAVE         15
+#define MYKEY_QLOAD         16
+#define MYKEY_FF            17
+#define MYKEY_EXIT          18
+#define MYKEY_POWER         19
+#define MYKEY_VOLUP         20
+#define MYKEY_VOLDOWN       21
+
+static SDL_sem *pad_sem = NULL;
+static SDL_Thread *thread = NULL;
+static int running = 0;
+static int event_fd = -1;
+
+uint32_t current_input = 0;
+uint32_t previous_input = 0;
+
+int JoystickUpdate(void *data)
+{
+    uint32_t bit = 0;
+    struct input_event ev = {0};
+
+    while (running) {
+        SDL_SemWait(pad_sem);
+        if (event_fd > 0) {
+            if (read(event_fd, &ev, sizeof(struct input_event))) {
+                if ((ev.type == EV_KEY) && (ev.value != 2)) {
+                    //printf("%s, code:%d\n", __func__, ev.code);
+
+                    switch (ev.code) {
+                    case 103: bit = (1 << MYKEY_UP);      break;
+                    case 108: bit = (1 << MYKEY_DOWN);    break;
+                    case 105: bit = (1 << MYKEY_LEFT);    break;
+                    case 106: bit = (1 << MYKEY_RIGHT);   break;
+                    case 57:  bit = (1 << MYKEY_A);       break;
+                    case 29:  bit = (1 << MYKEY_B);       break;
+                    case 42:  bit = (1 << MYKEY_X);       break;
+                    case 56:  bit = (1 << MYKEY_Y);       break;
+                    case 28:  bit = (1 << MYKEY_START);   break;
+                    case 97:  bit = (1 << MYKEY_SELECT);  break;
+                    case 18:  bit = (1 << MYKEY_L1);      break;
+                    case 15:  bit = (1 << MYKEY_L2);      break;
+                    case 20:  bit = (1 << MYKEY_R1);      break;
+                    case 14:  bit = (1 << MYKEY_R2);      break;
+                    case 1:   bit = (1 << MYKEY_MENU);    break;
+                    case 116: bit = (1 << MYKEY_POWER);   break;
+                    case 115: bit = (1 << MYKEY_VOLUP);   break;
+                    case 114: bit = (1 << MYKEY_VOLDOWN); break;
+                    }
+
+                    if(bit){
+                        if(ev.value){
+                            current_input |= bit;
+                        } else{
+                            current_input &= ~bit;
+                        }
+                    }
+                }
+            }
+        }
+        SDL_SemPost(pad_sem);
+        usleep(1000000 / 60);
+    }
+
+    return 0;
+}
+
 static int MMIYOO_JoystickInit(void)
 {
+    event_fd = open("/dev/input/event0", O_RDONLY | O_NONBLOCK | O_CLOEXEC);
+    if(event_fd < 0){
+        printf("failed to open /dev/input/event0\n");
+        return -1;
+    }
+
+    if((pad_sem =  SDL_CreateSemaphore(1)) == NULL) {
+        return SDL_SetError("Can't create input semaphore");
+    }
+
+    running = 1;
+    if((thread = SDL_CreateThreadInternal(JoystickUpdate, "MMIYOOInputThread", 4096, NULL)) == NULL) {
+        return SDL_SetError("Can't create input thread");
+    }
     return 1;
 }
 
@@ -74,8 +181,8 @@ static SDL_JoystickID MMIYOO_JoystickGetDeviceInstanceID(int device_index)
 
 static int MMIYOO_JoystickOpen(SDL_Joystick *joystick, int device_index)
 {
-    joystick->nbuttons = 14;
-    joystick->naxes = 2;
+    joystick->nbuttons = 15;
+    joystick->naxes = 0;
     joystick->nhats = 0;
     return 0;
 }
@@ -112,6 +219,24 @@ static int MMIYOO_JoystickSetSensorsEnabled(SDL_Joystick *joystick, SDL_bool ena
 
 static void MMIYOO_JoystickUpdate(SDL_Joystick *joystick)
 {
+    uint32_t buttons;
+    uint32_t changed;
+    uint32_t i;
+    uint32_t bit;
+
+    SDL_SemWait(pad_sem);
+    buttons = current_input;
+    SDL_SemPost(pad_sem);
+
+    changed = previous_input ^ buttons;
+    previous_input = buttons;
+
+    for(i = 0; i < 15; i++) {
+        bit = 1 << i;
+        if(changed & bit) {
+            SDL_PrivateJoystickButton(joystick, i, (buttons & bit) ? SDL_PRESSED : SDL_RELEASED);
+        }
+    }
 }
 
 static void MMIYOO_JoystickClose(SDL_Joystick *joystick)
@@ -120,6 +245,13 @@ static void MMIYOO_JoystickClose(SDL_Joystick *joystick)
 
 static void MMIYOO_JoystickQuit(void)
 {
+    running = 0;
+    SDL_WaitThread(thread, NULL);
+    SDL_DestroySemaphore(pad_sem);
+    if(event_fd > 0) {
+        close(event_fd);
+        event_fd = -1;
+    }
 }
 
 static SDL_bool MMIYOO_JoystickGetGamepadMapping(int device_index, SDL_GamepadMapping *out)

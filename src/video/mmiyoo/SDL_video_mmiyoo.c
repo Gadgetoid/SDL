@@ -177,6 +177,7 @@ static void MMIYOO_DeleteDevice(SDL_VideoDevice *device)
 int MMIYOO_CreateWindow(_THIS, SDL_Window *window)
 {
     SDL_SetMouseFocus(window);
+    SDL_SetKeyboardFocus(window);
     MMiyooVideoInfo.window = window;
     printf("%s, w:%d, h:%d\n", __func__, window->w, window->h);
     //glUpdateBufferSettings(fb_flip, &fb_idx, fb_vaddr);
